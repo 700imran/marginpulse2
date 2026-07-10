@@ -203,7 +203,7 @@
                             <!-- Submit Button -->
                             <div class="pt-8 mt-4 flex items-center justify-end border-t border-border">
                                 <button type="submit" id="submitBtn" class="btn-primary flex justify-center items-center py-3 px-8 text-[14px] font-bold rounded-DEFAULT text-white focus:outline-none w-full sm:w-auto">
-                                    <i data-lucide="send" class="w-4 h-4 mr-2" id="submitIcon"></i>
+                                    <span id="submitIconWrapper" class="flex items-center"><i data-lucide="send" class="w-4 h-4 mr-2"></i></span>
                                     <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white hidden" id="loadingIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -337,7 +337,6 @@
         const insightsBtn = document.getElementById('nav-item-insights');
 
         const submitBtn = document.getElementById('submitBtn');
-        const submitIcon = document.getElementById('submitIcon');
         const loadingIcon = document.getElementById('loadingIcon');
         const submitText = document.getElementById('submitText');
 
@@ -389,9 +388,9 @@
             formView.classList.remove('hidden');
             insightsView.classList.add('hidden');
             
-            // Reset insights button styling
+            // Reset insights button styling and safely restore the icon HTML
             insightsBtn.className = "w-full flex items-center px-4 py-2.5 bg-bg hover:bg-teal-light text-slate rounded-DEFAULT text-sm font-bold transition-all border border-border hover:border-teal hover:text-teal group";
-            insightsBtn.querySelector('i').className = "w-4 h-4 mr-3 text-muted group-hover:text-teal transition-colors";
+            insightsBtn.innerHTML = `<i data-lucide="bar-chart-2" class="w-4 h-4 mr-3 text-muted group-hover:text-teal transition-colors"></i> Business Insights`;
 
             // Re-render sidebar to update active states
             renderSidebar();
@@ -454,9 +453,9 @@
             currentSheet = null; // Deselect form sheets
             renderSidebar(); // Clear active states on the left nav
             
-            // Style the insights button as active (Brand colors)
+            // Style the insights button as active (Brand colors) and safely restore the icon HTML
             insightsBtn.className = "w-full flex items-center px-4 py-2.5 bg-teal text-white rounded-DEFAULT text-sm font-bold transition-all border border-teal shadow-md shadow-teal/20";
-            insightsBtn.querySelector('i').className = "w-4 h-4 mr-3 text-teal-border";
+            insightsBtn.innerHTML = `<i data-lucide="bar-chart-2" class="w-4 h-4 mr-3 text-teal-border"></i> Business Insights`;
             
             // Update Header texts
             pageTitle.textContent = "Business Insights";
@@ -649,15 +648,17 @@
 
         // Loading State Manager
         function setLoading(isLoading) {
+            const submitIconWrapper = document.getElementById('submitIconWrapper');
+            
             if (isLoading) {
                 submitBtn.classList.add('opacity-90', 'cursor-not-allowed');
-                submitIcon.classList.add('hidden');
+                if (submitIconWrapper) submitIconWrapper.classList.add('hidden');
                 loadingIcon.classList.remove('hidden');
                 submitText.textContent = "Processing...";
                 submitBtn.disabled = true;
             } else {
                 submitBtn.classList.remove('opacity-90', 'cursor-not-allowed');
-                submitIcon.classList.remove('hidden');
+                if (submitIconWrapper) submitIconWrapper.classList.remove('hidden');
                 loadingIcon.classList.add('hidden');
                 submitText.textContent = "Submit to Google Sheets";
                 submitBtn.disabled = false;
@@ -697,6 +698,11 @@
             }, 5000);
         }
 
+        // Boot
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
         // Boot
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
