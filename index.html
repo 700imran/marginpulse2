@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -753,18 +753,16 @@
             const errorBox = document.getElementById('loginError');
             const loginBtn = document.getElementById('loginBtn');
             
-            // Set loading state
+            /* Set loading state */
             btnText.textContent = "Authenticating...";
             loading.classList.remove('hidden');
             loginBtn.disabled = true;
             errorBox.classList.add('hidden');
             
-            const formData = new FormData();
-            formData.append('action', 'login');
-            formData.append('email', email);
-            formData.append('password', pass);
+            /* Build safe GET URL for Google Apps Script */
+            const authUrl = `${scriptURL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(pass)}`;
             
-            fetch(scriptURL, { method: 'POST', body: formData })
+            fetch(authUrl)
             .then(res => res.json())
             .then(data => {
                 if (data.result === 'success') {
@@ -782,8 +780,9 @@
                 }
             })
             .catch(err => {
-                errorBox.textContent = "Connection error. Ensure your script URL is correct.";
+                errorBox.textContent = "Google blocked the connection. Ensure Deployment is set to 'Anyone'.";
                 errorBox.classList.remove('hidden');
+                console.error(err);
             })
             .finally(() => {
                 btnText.textContent = "Sign In Securely";
