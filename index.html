@@ -597,9 +597,11 @@
             const overlay = document.getElementById('sidebar-overlay');
             
             if (sidebar.classList.contains('-translate-x-full')) {
+                /* Open the sidebar */
                 sidebar.classList.remove('-translate-x-full');
                 overlay.classList.remove('hidden');
             } else {
+                /* Close the sidebar */
                 sidebar.classList.add('-translate-x-full');
                 overlay.classList.add('hidden');
             }
@@ -631,11 +633,11 @@
                 method: 'POST', 
                 body: formData 
             })
-            .then(response => response.text()) // Usually returns plain text or JSON
+            .then(response => response.text()) 
             .then(data => {
                 showToast(`Successfully added "${formData.get('field')}" to ${currentSheet}.`, "success");
                 form.reset();
-                updateFormForSheet(currentSheet); // reset dropdown state
+                updateFormForSheet(currentSheet); 
             })
             .catch(error => {
                 console.error('Error!', error.message);
@@ -689,22 +691,28 @@
             `;
             
             container.appendChild(toast);
-            lucide.createIcons();
+            
+            if (window.lucide) {
+                lucide.createIcons();
+            }
 
             // Auto remove after 5 seconds
             setTimeout(() => {
                 toast.classList.replace('toast-enter', 'toast-exit');
-                setTimeout(() => toast.remove(), 500); // Wait for exit animation
+                setTimeout(() => toast.remove(), 500);
             }, 5000);
         }
 
-        // Boot
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
-</body>
-</html>
-        // Boot
-        document.addEventListener('DOMContentLoaded', initApp);
+        /* 
+         * Application Initialization
+         * Safely triggering the build of the sidebar and forms once the DOM is ready.
+         * Using block comments to prevent copy-paste line-break errors!
+         */
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
