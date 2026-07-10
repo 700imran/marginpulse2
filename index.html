@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -510,21 +510,29 @@
             const statsContainer = document.getElementById('insightsStats');
             const tableBody = document.getElementById('recentDataBody');
             
-            // Set Loading UI
             tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-muted flex flex-col items-center justify-center"><svg class="animate-spin h-6 w-6 mb-3 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Pulling live data from Sheets...</td></tr>';
             
-            // Perform GET request
-            fetch(scriptURL + "?action=insights")
-                .then(response => response.json())
-                .then(data => {
+            const formData = new FormData();
+            formData.append('action', 'insights');
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
                     renderInsights(data);
-                })
-                .catch(error => {
-                    console.error('Insights Error:', error);
-                    statsContainer.innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-lg col-span-3 border border-red-200 text-sm font-medium"><i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i> Failed to load insights. Make sure the Google Apps Script is updated with the doGet function and deployed correctly.</div>`;
-                    tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-6 text-center text-red-500 text-sm font-semibold">Data unavailable. Update script backend.</td></tr>';
-                    lucide.createIcons();
-                });
+                } else {
+                    throw new Error(data.message || "Failed to load data");
+                }
+            })
+            .catch(error => {
+                console.error('Insights Error:', error);
+                statsContainer.innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-lg col-span-3 border border-red-200 text-sm font-medium"><i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i> Failed to load insights. Error: ${error.message}</div>`;
+                tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-6 text-center text-red-500 text-sm font-semibold">Data unavailable.</td></tr>';
+                lucide.createIcons();
+            });
         }
 
         function renderInsights(data) {
@@ -642,7 +650,7 @@
         form.addEventListener("submit", e => {
             e.preventDefault();
             
-            if (scriptURL === "YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE") {
+            if (scriptURL === "https://script.google.com/macros/s/AKfycbxgeePOiW2-NrZzo_GjSNybJMAMmfPUSDVw7kxmkrWqnsB9AIei2i8wBXGy9f5CToBH/exec") {
                 showToast("Error: Google Apps Script URL not configured. See Setup Guide.", "error");
                 return;
             }
@@ -735,12 +743,12 @@
         }
 
         // ==========================================
-        // AUTHENTICATION LOGIC
+        // AUTHENTICATION LOGIC (NOW USING SECURE POST)
         // ==========================================
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            if (scriptURL === "YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE") {
+            if (scriptURL === "https://script.google.com/macros/s/AKfycbxgeePOiW2-NrZzo_GjSNybJMAMmfPUSDVw7kxmkrWqnsB9AIei2i8wBXGy9f5CToBH/exec") {
                 document.getElementById('loginError').textContent = "Google Apps Script URL not configured.";
                 document.getElementById('loginError').classList.remove('hidden');
                 return;
@@ -753,34 +761,34 @@
             const errorBox = document.getElementById('loginError');
             const loginBtn = document.getElementById('loginBtn');
             
-            /* Set loading state */
             btnText.textContent = "Authenticating...";
             loading.classList.remove('hidden');
             loginBtn.disabled = true;
             errorBox.classList.add('hidden');
             
-            /* Build safe GET URL for Google Apps Script */
-            const authUrl = `${scriptURL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(pass)}`;
+            const formData = new FormData();
+            formData.append('action', 'login');
+            formData.append('email', email);
+            formData.append('password', pass);
             
-            fetch(authUrl)
+            fetch(scriptURL, {
+                method: 'POST',
+                body: formData
+            })
             .then(res => res.json())
             .then(data => {
                 if (data.result === 'success') {
-                    // Save secure session token in browser
                     sessionStorage.setItem('mp_auth_token', 'true');
-                    
-                    // Fade out login screen
                     document.getElementById('loginOverlay').classList.add('opacity-0');
                     setTimeout(() => document.getElementById('loginOverlay').classList.add('hidden'), 300);
-                    
-                    initApp(); // Boot the app behind the scenes
+                    initApp(); 
                 } else {
                     errorBox.textContent = data.message || "Invalid credentials.";
                     errorBox.classList.remove('hidden');
                 }
             })
             .catch(err => {
-                errorBox.textContent = "Google blocked the connection. Ensure Deployment is set to 'Anyone'.";
+                errorBox.textContent = "Network error. Please check your connection or Apps Script URL.";
                 errorBox.classList.remove('hidden');
                 console.error(err);
             })
