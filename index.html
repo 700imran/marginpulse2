@@ -297,7 +297,7 @@
         // ==========================================
         // CONFIGURATION: Connect to the specific Apps Script Web App
         // ==========================================
-        const scriptURL = "https://script.google.com/macros/s/AKfycbxgeePOiW2-NrZzo_GjSNybJMAMmfPUSDVw7kxmkrWqnsB9AIei2i8wBXGy9f5CToBH/exec"; 
+        const scriptURL = "https://script.google.com/macros/s/AKfycbzdkp6ooDap109xE2-y8JaT4js4u785u-eHGoWyYzLMUmzZ0soEBsKmvZCT9NJynquu/exec"; 
         // ==========================================
 
         // Define the taxonomy and fields based on the provided CSVs
@@ -650,7 +650,7 @@
         form.addEventListener("submit", e => {
             e.preventDefault();
             
-            if (scriptURL === "https://script.google.com/macros/s/AKfycbxgeePOiW2-NrZzo_GjSNybJMAMmfPUSDVw7kxmkrWqnsB9AIei2i8wBXGy9f5CToBH/exec") {
+            if (scriptURL === "https://script.google.com/macros/s/AKfycbzdkp6ooDap109xE2-y8JaT4js4u785u-eHGoWyYzLMUmzZ0soEBsKmvZCT9NJynquu/exec") {
                 showToast("Error: Google Apps Script URL not configured. See Setup Guide.", "error");
                 return;
             }
@@ -748,7 +748,7 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            if (scriptURL === "https://script.google.com/macros/s/AKfycbxgeePOiW2-NrZzo_GjSNybJMAMmfPUSDVw7kxmkrWqnsB9AIei2i8wBXGy9f5CToBH/exec") {
+            if (scriptURL === "https://script.google.com/macros/s/AKfycbzdkp6ooDap109xE2-y8JaT4js4u785u-eHGoWyYzLMUmzZ0soEBsKmvZCT9NJynquu/exec") {
                 document.getElementById('loginError').textContent = "Google Apps Script URL not configured.";
                 document.getElementById('loginError').classList.remove('hidden');
                 return;
